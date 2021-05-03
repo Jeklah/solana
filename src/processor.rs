@@ -49,6 +49,11 @@ impl Processor {
             return Err(EscrowError::NotRentExempt.into());
         }
 
+        let mut escrow_info = Escrow::unpack_unchecked(&escrow_account.data.borrow())?;
+        if escrow_info.is_initialized() {
+            return Err(ProgramError::AccountAlreadyInitalized);
+        }
+
         Ok(())
     }
 }
