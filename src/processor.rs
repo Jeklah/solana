@@ -8,8 +8,7 @@ use solana_program::{
     sysvar::{rent::Rent, Sysvar},
 };
 
-use crate::instruction::EscrowInstruction;
-
+use crate::{instruction::EscrowInstruction, error::EscrowError}
 pub struct Processor;
 impl Processor {
     pub fn process(program_id: &Pubkeu, accounts: &[AccountInfo], instruction_data: &[u8]) -> ProgramResult {
