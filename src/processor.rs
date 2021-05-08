@@ -8,7 +8,7 @@ use solana_program::{
     sysvar::{rent::Rent, Sysvar},
 };
 
-use crate::{instruction::EscrowInstruction, error::EscrowError}
+use crate::{instruction::EscrowInstruction, error::EscrowError, state::Escrow};
 pub struct Processor;
 impl Processor {
     pub fn process(program_id: &Pubkeu, accounts: &[AccountInfo], instruction_data: &[u8]) -> ProgramResult {
@@ -52,6 +52,15 @@ impl Processor {
         if escrow_info.is_initialized() {
             return Err(ProgramError::AccountAlreadyInitalized);
         }
+
+        escrow_info.is_initialized = true;
+        escrow_info.initializer_pubkey = *initializer_key;
+        escrow_info.temp_token_account_pubkey = *temp_token_account.key;
+        escrow_info.initializer_token_to_receive_account_pubkey = *token_to_receive_account.key;
+        escrow_info.expected_amount = amount;
+
+        Escrow:pack(escrow_info, &mut escrow_account.data.borrow_mut())?;
+        let (pds, _bump_seed) = PubKey::find_program_address(&[b"escrow"], program_id);
 
         Ok(())
     }
