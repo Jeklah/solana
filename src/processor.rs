@@ -32,7 +32,7 @@ impl Processor {
         amount: u64,
         program_id: &Pubkey,
     ) -> ProgramResult {
-        let account_info_iter = &mut accounts.item();
+        let account_info_iter = &mut accounts.iter();
         let initializer = next_account_info(account_info_iter)?;
 
         if !initializer.is_signer {
@@ -41,7 +41,7 @@ impl Processor {
 
         let temp_token_account = next_account_info(account_info_iter)?;
 
-        let token_to_receive_account = next_account_info(account_info_item)?;
+        let token_to_receive_account = next_account_info(account_info_iter)?;
         if *token_to_receive_account.owner != spl_token::id() {
             return Err(ProgramError::IncorrectProgramId);
         }
@@ -55,7 +55,7 @@ impl Processor {
 
         let mut escrow_info = Escrow::unpack_unchecked(&escrow_account.data.borrow())?;
         if escrow_info.is_initialized() {
-            return Err(ProgramError::AccountAlreadyInitalized);
+            return Err(ProgramError::AccountAlreadyInitialized);
         }
 
         escrow_info.is_initialized = true;
@@ -73,7 +73,7 @@ impl Processor {
             Some(&pda),
             spl_token::instruction::AuthorityType::AccountOwner,
             initializer.key,
-            *[&initializer.key],
+            &[&initializer.key],
         )?;
 
         msg!("Calling the token program to transfer token account ownership...");
