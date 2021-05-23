@@ -1,6 +1,6 @@
 // inside instruction.rs
 use std::convert::TryInto;
-use my_solana_program::program_error::ProgramError;
+use solana_program::program_error::ProgramError;
 
 use crate::error::EscrowError::InvalidInstruction;
 
@@ -30,21 +30,21 @@ pub enum EscrowInstruction {
 impl EscrowInstruction {
     /// Unpacks a byte buffer into an [EscrowInstruction](enum.EscrowInstruction.html).
 
-    pub fn unpack(input: &[u8] -> Result<Self, ProgramError> {
+    pub fn unpack(input: &[u8]) -> Result<Self, ProgramError> {
         let (tag, rest) = input.split_first().ok_or(InvalidInstruction)?;
 
         Ok(match tag {
             0 => Self::InitEscrow {
                 amount: Self::unpack_amount(rest)?,
             },
-                => return Err(InvalidInstruction.into()),
+              _  => return Err(InvalidInstruction.into()),
         })
-    })
+    }
 
     fn unpack_amount(input: &[u8]) -> Result<u64, ProgramError> {
         let amount = input
             .get(..8)
-            .and_then([slice] slice.try_into().ok())
+            .and_then(|slice| slice.try_into().ok())
             .map(u64::from_le_bytes)
             .ok_or(InvalidInstruction)?;
         Ok(amount)
